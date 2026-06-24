@@ -39,23 +39,42 @@ app.post("/api/tts", async (req, res) => {
       return;
     }
 
-    const voiceName = voice || "Kore"; // Puck, Charon, Kore, Fenrir, Zephyr
+    const requestedVoice = voice || "Kore";
+    const baseVoice = requestedVoice.split("_")[0];
+    const voiceName = ["Puck", "Charon", "Kore", "Fenrir", "Zephyr"].includes(baseVoice) ? baseVoice : "Kore";
     const stylePrompt = style || "default";
 
     // Build specific prompt instructing how to read the text
     let promptPrefix = "";
+    
+    // 1. Inject virtual female voice identities
+    if (requestedVoice === "Kore_sweet") {
+      promptPrefix += "【語音角色提示】：你是 Mimi，一個非常甜美、活潑、充滿活力且愛笑的少女，講話聲音甜潤、語速輕快自然，對世界充滿熱情。\n";
+    } else if (requestedVoice === "Charon_elegant") {
+      promptPrefix += "【語音角色提示】：你是 Alice，一位極其專業、資深且優雅的廣播電台新聞女主播。講話字正腔圓、大氣沉穩、咬字極其清晰，富有公信力。\n";
+    } else if (requestedVoice === "Kore_breeze") {
+      promptPrefix += "【語音角色提示】：你是 Lily，一位在大型百貨與超市服務的朝氣櫃姐與活力店員。講話熱情親切、充滿親和力、略帶上揚與甜美笑容的迎賓感。\n";
+    } else if (requestedVoice === "Charon_mind") {
+      promptPrefix += "【語音角色提示】：你是 Dora，一位充滿禪意、和緩、平靜的瑜伽冥想與療癒心靈導師。講話聲音溫柔緩慢、靜謐舒緩，字與字之間有舒適的調息停頓。\n";
+    } else if (requestedVoice === "Kore") {
+      promptPrefix += "【語音角色提示】：你是溫柔、溫馨、充滿家庭親和力的溫暖女聲，講話流暢和緩，帶有關懷感。\n";
+    } else if (requestedVoice === "Charon") {
+      promptPrefix += "【語音角色提示】：你是知性、精準、條理清晰且富有邏輯的專業女聲，語速適中且咬字冷靜準確。\n";
+    }
+
+    // 2. Combine with general mood style
     if (stylePrompt === "warm") {
-      promptPrefix = "請以溫馨、親切、關懷的語調，充滿人情味地朗讀以下內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以溫馨、親切、關懷的語調，充滿人情味地朗讀以下內容：\n\n";
     } else if (stylePrompt === "professional") {
-      promptPrefix = "請以專業、沉穩、標準的新聞播報腔調，清晰地朗讀以下內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以專業、沉穩、標準的新聞播報腔調，清晰地朗讀以下內容：\n\n";
     } else if (stylePrompt === "energetic") {
-      promptPrefix = "請以高亢、活力、熱情、極具說服力的語調，朗讀以下廣播內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以高亢、活力、熱情、極具說服力的語調，朗讀以下廣播內容：\n\n";
     } else if (stylePrompt === "story") {
-      promptPrefix = "請以說故事般、緩慢、溫柔、富有感性與層次的語調，朗讀以下內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以說故事般、緩慢、溫柔、富有感性與層次的語調，朗讀以下內容：\n\n";
     } else if (stylePrompt === "urgent") {
-      promptPrefix = "請以嚴肅、清晰、肯定且帶有提醒感的警示語調，朗讀以下通知內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以嚴肅、清晰、肯定且帶有提醒感的警示語調，朗讀以下通知內容：\n\n";
     } else {
-      promptPrefix = "請以自然、清晰、節奏適中的語音，朗讀以下內容：\n\n";
+      promptPrefix += "【讀音風格需求】：請以自然、清晰、節奏適中的語音，朗讀以下內容：\n\n";
     }
 
     const ai = getAiClient();
