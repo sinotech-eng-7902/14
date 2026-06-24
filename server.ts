@@ -189,7 +189,10 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    // Robust production path finding:
+    // If bundled as dist/server.cjs, __dirname is already the 'dist' directory.
+    // Otherwise we fall back to process.cwd() + '/dist'.
+    const distPath = __dirname.endsWith("dist") ? __dirname : path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
