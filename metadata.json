@@ -1,0 +1,6 @@
+{
+  "name": "AI 廣播逐字稿語音產生器",
+  "description": "幫助您每週將廣播逐字稿優化並轉換為高品質 AI 語音的工具。支援多種語意配音、多角色預聽與歷史記錄管理。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
